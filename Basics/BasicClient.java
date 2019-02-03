@@ -3,7 +3,7 @@ import java.net.*;
 
 public class BasicClient{
     public static void main(String[] args){
-	run(Integer.parseInt(args[0]), "localhost");
+	run(Integer.parseInt(args[0]), args[1]);
     }
 
     public static void run(int port, String hostname){
