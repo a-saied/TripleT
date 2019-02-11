@@ -82,7 +82,7 @@ public class BasicServer {
 					}
 					else{
 						System.out.println("Asking player to become client...");
-						out.writeUTF("CLI " + Medium.remove(Easy.size()-1) + "\n");
+						out.writeUTF("CLI " + Medium.remove(Medium.size()-1) + "\n");
 					}
 					break;
 				case "Hard":
@@ -93,7 +93,7 @@ public class BasicServer {
 					}
 					else{
 						System.out.println("Asking player to become client...");
-						out.writeUTF("CLI " + Hard.remove(Easy.size()-1) + "\n");
+						out.writeUTF("CLI " + Hard.remove(Hard.size()-1) + "\n");
 					}
 					break;
 				default:
