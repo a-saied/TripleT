@@ -60,6 +60,10 @@ public class BasicServer {
 			// 	}
 			// }
 
+			String address = server.getRemoteSocketAddress().toString();
+			address = address.split(":")[0];
+			address = address.split("/")[1];
+
 			String diff = in.readUTF();
 			System.out.println("Player entered difficuly: " + diff);
 			switch(diff) {
@@ -67,7 +71,7 @@ public class BasicServer {
 					if(Easy.isEmpty()) {
 						System.out.println("Asking player to host...");
 						out.writeUTF("SERV\n");
-						Easy.add(server.getRemoteSocketAddress().toString());
+						Easy.add(address);
 					}
 					else{
 						System.out.println("Asking player to become client...");
@@ -78,7 +82,7 @@ public class BasicServer {
 					if(Medium.isEmpty()) {
 						System.out.println("Asking player to host...");
 						out.writeUTF("SERV\n");
-						Medium.add(server.getRemoteSocketAddress().toString());
+						Medium.add(address);
 					}
 					else{
 						System.out.println("Asking player to become client...");
@@ -89,7 +93,7 @@ public class BasicServer {
 					if(Hard.isEmpty()) {
 						System.out.println("Asking player to host...");
 						out.writeUTF("SERV\n");
-						Hard.add(server.getRemoteSocketAddress().toString());
+						Hard.add(address);
 					}
 					else{
 						System.out.println("Asking player to become client...");

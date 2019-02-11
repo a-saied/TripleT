@@ -38,7 +38,7 @@ public class BasicClient{
 		    boolean makeClient = false;
 		    BufferedReader br = new BufferedReader(new InputStreamReader(inFromServer));
 
-		    String address;
+		    String address = "";
 
 		    while(true){
 		    	String sample = "";
@@ -58,7 +58,7 @@ public class BasicClient{
 		    	}
 		    }
 
-		    if(makeClient) buildClient();
+		    if(makeClient) buildClient(address);
 		    if(makeServer) buildServer();
 		    //System.out.println("Server says " + in.readUTF());
 		    //client.close();
@@ -89,11 +89,12 @@ public class BasicClient{
     	}
     }
 
-    public void buildClient(){
+    public void buildClient(String address){
     	System.out.println("Entering game as client");
-    	//Thread.sleep(500);
+    	System.out.println("Connecting to: " + address);
+
     		try{
-			    Socket client = new Socket("localhost", 6666);
+			    Socket client = new Socket(address, 6666);
 
 
 			    System.out.println("Just connected to " + client.getRemoteSocketAddress());
@@ -101,9 +102,7 @@ public class BasicClient{
 			    DataOutputStream out = new DataOutputStream(outToServer);
 			             
 			    out.writeUTF("Hello from " + client.getLocalSocketAddress());
-			    // out.writeUTF("EASY");
 			    InputStream inFromServer = client.getInputStream();
-			    // DataInputStream in = new DataInputStream(inFromServer);
 
 			    boolean makeServer = false;
 			    boolean makeClient = false;
