@@ -1,5 +1,6 @@
 import java.io.*;
 import java.net.*;
+import java.util.Scanner;
 
 public class BasicClient{
     public static void main(String[] args){
@@ -19,27 +20,40 @@ public class BasicClient{
 		    DataOutputStream out = new DataOutputStream(outToServer);
 		             
 		    out.writeUTF("Hello from " + client.getLocalSocketAddress());
-		    // out.writeUTF("EASY");
 		    InputStream inFromServer = client.getInputStream();
-		    // DataInputStream in = new DataInputStream(inFromServer);
+		    DataInputStream in = new DataInputStream(inFromServer);
+		    System.out.println(in.readUTF());
+
+		    Scanner scanner = new Scanner(System.in);
+
+			while(true){
+				if(scanner.hasNextLine()){
+					String diff = scanner.nextLine();
+					out.writeUTF(diff);
+					break;
+				}
+			}
 
 		    boolean makeServer = false;
 		    boolean makeClient = false;
 		    BufferedReader br = new BufferedReader(new InputStreamReader(inFromServer));
+
+		    String address;
+
 		    while(true){
 		    	String sample = "";
-		    	sample = br.readLine();
-		    	// if(sample != ""){
-		    		System.out.println(sample);
-		    		//System.out.println("split indicator");
-		    	// }
+		    	sample = br.readLine().trim();
+		    	System.out.println(sample);
 
-		    	if(sample.trim().equals("SERV")){
+		    	String[] s = sample.split(" ");
+
+		    	if(sample.equals("SERV")){
 		    		makeServer = true;
 		    		break;
 		    	}
-		    	if(sample.trim().equals("CLI")){
+		    	if(s[0].equals("CLI")){
 		    		makeClient = true;
+		    		address = s[1];
 		    		break;
 		    	}
 		    }
