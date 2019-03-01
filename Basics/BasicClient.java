@@ -146,69 +146,158 @@ public class BasicClient{
 
     private void runGameClient(DataInputStream in, DataOutputStream out){
     	try{
-    		System.out.println("You are PLAYER 2. PLAYER 1 will go first");
     		int board[][] = new int[3][3];
-    		board[0][0] = 2;
-    		System.out.println(board[0][0]);
+    		buildBoard(0,0,board);
+    		System.out.println("You are PLAYER 2. PLAYER 1 will go first");
+    		
+    		//board[0][0] = 2;
+    		boolean gameRunning = true;
+    		//System.out.println(board[0][0]);
     		//out.writeUTF("Row: 2");
-    		while(true){
-    			System.out.println(in.readUTF());
-    			out.writeUTF("GANG");
-    			// System.out.println(in.readUTF());
+    		String row = null;
+    		String col = null;
+    		while(gameRunning){
+    			//receive packet, build board, check win 
+    			row = in.readUTF();
+    			col = row.split(" ")[0];
+    			row = row.split(" ")[1];
+
+    			System.out.println(row);
+    			System.out.println(col);
+    			int c = Integer.parseInt(col);
+    			int r = Integer.parseInt(row);
+    			board[r][c] = 1;
+    			buildBoard(r, c, board);
+    			gameRunning = checkWin(board);
+    			if(!gameRunning){
+    				System.out.println("Yikes! You lose :(");
+    				break;
+    			}
+
+    			/// make move, build board, check win
+    			makeMove(in , out, board, false);
+    			//buildBoard(row, col, board); run within makeMove, no need to get row, col a second time 
+    			gameRunning = checkWin(board); 
+    			if(!gameRunning){
+    				System.out.println("Congrats, you win!");
+    				break;
+    			}
     		}
 
     	}catch(Exception e){
-
+    		//e.printStackTrace();
+    		//System.out.println("problems");
     	}
     }
 
     private void runGameServer(DataInputStream in, DataOutputStream out){
     	try{
     		int[][] board = new int[3][3];
+    		buildBoard(0,0, board);
     		System.out.println("You are PLAYER 1. Make the first move");
     		boolean gameRunning = true;
     		String row = null;
     		String col = null;
     		while(gameRunning){
-    			makeMove(in , out, board);
+    			/// make move, build board, check win
+    			makeMove(in , out, board, true);
+    			//buildBoard(row, col, board); run within makeMove, no need to get row, col a second time 
+    			gameRunning = checkWin(board); 
+    			if(!gameRunning){
+    				System.out.println("Congrats, you win!");
+    				break;
+    			}
+    			//receive packet, build board, check win 
     			row = in.readUTF();
     			col = row.split(" ")[0];
     			row = row.split(" ")[1];
-    			
+
+    			int c = Integer.parseInt(col);
+    			int r = Integer.parseInt(row);
+    			board[r][c] = 2;
     			System.out.println(row);
     			System.out.println(col);
-    			//gameRunning = false;
-    			//buildBoard(row, col, board);
-    			//gameRunning = checkWin(board); 
+    			buildBoard(r, c, board);
+    			gameRunning = checkWin(board);
+    			if(!gameRunning){
+    				System.out.println("Yikes! You lose :(");
+    				break;
+    			}
     		}
     		//System.out.println("Game Over. See you next time!");
 
     	}catch(Exception e){
-
+    		e.printStackTrace(); 
+    		//System.out.println("problems");
     	}
     }
-    private void makeMove(DataInputStream in, DataOutputStream out, int[][] board){
+
+    private void makeMove(DataInputStream in, DataOutputStream out, int[][] board, boolean isServer){
     	Scanner sc = new Scanner(System.in);
-    	System.out.print("What row would you like: ");
-    	String r = sc.nextLine();
-    	System.out.print("What column would you like: ");
-    	String c = r + sc.nextLine();
-    	try{
-	    	out.writeUTF(c);
-    		//out.writeUTF(c);
-    	}catch(Exception e){
-    		e.printStackTrace();
+    	int row = -1;
+    	int col = -1;
+    	while(true){
+    		try{
+	    	System.out.print("What row would you like: ");
+    			String r = sc.nextLine();
+    			row = Integer.parseInt(r);
+    			System.out.print("What column would you like: ");
+	    		String c = sc.nextLine();
+	    		col = Integer.parseInt(c);
+	    		c = c + " " + r; 
+	    		out.writeUTF(c);
+	    		if(row < 3 && col < 3 &&row >=0 && col >= 0){
+	    			if(isServer) board[row][col] = 1;
+	    			else board[row][col] = 2;
+	    			break;
+	    		}else{
+	    			System.out.println("out of range");
+	    		}
+    			//out.writeUTF(c);
+    			
+    		}catch(Exception e){
+    			System.out.println("Invalid inputs: please try again");
+    		}
     	}
+    	buildBoard(row, col, board);
 
     }
 
-    // private void buildBoard(String x, String y){
-    // 	// fill = "X", "O",
-    // }
+    private void buildBoard(int x, int y, int[][] board){
+    	//String[][] draw = new String[3][3];
+    	char[] letters= new char[3];
+    	letters[0] = 'R';
+    	letters[1] = 'o';
+    	letters[2] = 'w';
+    	System.out.println("    ----Col----");
+    	System.out.println("     0   1   2   ");
+    	for(int i = 0; i < board.length; i++){
+    		System.out.print(letters[i] + " " + (i) + "  ");
+    		for(int j = 0; j < board[0].length; j++){
+    			if(board[i][j] == 2){
+    				//draw[i][j] = "O";
+    				System.out.print("O   ");
+    			}
+    			else if(board[i][j] == 1){
+    				//draw[i][j] = "X";
+    				System.out.print("X   ");
+    			}
+    			else{
+    				//draw[i][j] = " ";
+    				System.out.print("    ");
+    			}
+    		}
+    		System.out.println("   ");
+    	}
+    	
+    	//System.out.println("  " + draw[0][0] = )
 
-    // private boolean checkWin(int[][] board){
 
-    // }
+    }
+
+    private boolean checkWin(int[][] board){
+    	return true;
+    }
 
 }
 
