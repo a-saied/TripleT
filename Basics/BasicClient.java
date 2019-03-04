@@ -168,7 +168,7 @@ public class BasicClient{
     			int r = Integer.parseInt(row);
     			board[r][c] = 1;
     			buildBoard(r, c, board);
-    			gameRunning = checkWin(board);
+    			gameRunning = !checkWin(board, true);
     			if(!gameRunning){
     				System.out.println("Yikes! You lose :(");
     				break;
@@ -177,7 +177,7 @@ public class BasicClient{
     			/// make move, build board, check win
     			makeMove(in , out, board, false);
     			//buildBoard(row, col, board); run within makeMove, no need to get row, col a second time 
-    			gameRunning = checkWin(board); 
+    			gameRunning = !checkWin(board, false); 
     			if(!gameRunning){
     				System.out.println("Congrats, you win!");
     				break;
@@ -202,7 +202,7 @@ public class BasicClient{
     			/// make move, build board, check win
     			makeMove(in , out, board, true);
     			//buildBoard(row, col, board); run within makeMove, no need to get row, col a second time 
-    			gameRunning = checkWin(board); 
+    			gameRunning = !checkWin(board, true); 
     			if(!gameRunning){
     				System.out.println("Congrats, you win!");
     				break;
@@ -218,7 +218,7 @@ public class BasicClient{
     			System.out.println(row);
     			System.out.println(col);
     			buildBoard(r, c, board);
-    			gameRunning = checkWin(board);
+    			gameRunning = !checkWin(board, false);
     			if(!gameRunning){
     				System.out.println("Yikes! You lose :(");
     				break;
@@ -295,8 +295,25 @@ public class BasicClient{
 
     }
 
-    private boolean checkWin(int[][] board){
-    	return true;
+    private boolean checkWin(int[][] board, boolean isServer){
+    	int checkValue;
+    	if(isServer) checkValue = 1;
+    	else checkValue = 2;
+
+    	if(board[1][1] == checkValue){
+    		if(board[0][0] == checkValue && board[2][2] == checkValue) return true;
+    		else if(board[0][1] == checkValue && board[2][1] == checkValue) return true;
+    		else if(board[1][0] == checkValue && board[1][2] == checkValue) return true;
+    		else if(board[0][2] == checkValue && board[2][0] == checkValue) return true;
+    	}
+    	else{
+    		if(board[0][0] == checkValue && board[0][1] == checkValue && board[0][2] == checkValue) return true;
+    		else if (board[0][0] == checkValue && board[1][0] == checkValue && board[2][0] == checkValue) return true;
+    		else if (board[0][2] == checkValue && board[1][2] == checkValue && board[2][2] == checkValue) return true;
+    		else if (board[2][0] == checkValue && board[2][1] == checkValue && board[2][2] == checkValue) return true;
+    	}
+
+    	return false;
     }
 
 }
