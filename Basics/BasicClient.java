@@ -5,11 +5,11 @@ import java.util.Scanner;
 public class BasicClient{
     public static void main(String[] args){
     	BasicClient bc = new BasicClient();
-    	bc.run(Integer.parseInt(args[0]), "localhost");
+    	bc.run(Integer.parseInt(args[0]), args[1], "localhost");
     }
 
 
-    public void run(int port, String hostname){
+    public void run(int port, String diff, String hostname){
 		System.out.println("Connecting to " + hostname + "\n");
 		try{
 		    Socket client = new Socket(hostname, port);
@@ -24,15 +24,8 @@ public class BasicClient{
 		    DataInputStream in = new DataInputStream(inFromServer);
 		    System.out.println(in.readUTF());
 
-		    Scanner scanner = new Scanner(System.in);
-
-			while(true){
-				if(scanner.hasNextLine()){
-					String diff = scanner.nextLine();
-					out.writeUTF(diff);
-					break;
-				}
-			}
+            // Tell lobby the desired difficulty
+            out.writeUTF(diff);
 
 		    boolean makeServer = false;
 		    boolean makeClient = false;
@@ -60,11 +53,11 @@ public class BasicClient{
 
 		    if(makeClient) {
 		    	client.close();
-		    	buildClient(address, port, hostname);
+		    	buildClient(address, port, hostname, diff);
 		    }
 		    if(makeServer) {
 		    	client.close();
-		    	buildServer(port, hostname);
+		    	buildServer(port, hostname, diff);
 		    }
 		    //System.out.println("Server says " + in.readUTF());
 		    //client.close();
@@ -74,7 +67,7 @@ public class BasicClient{
 		}
     }
 
-    public void buildServer(int port, String lobby_host){ 
+    public void buildServer(int port, String lobby_host, String diff){ 
     	System.out.println("Creating game as host");
     	try{
 	    	ServerSocket serv = new ServerSocket(6666);
@@ -94,7 +87,7 @@ public class BasicClient{
     	}
     	catch(ConnectException ce){
     		System.out.println("connection error: returning to game lobby");
-    		run(port, lobby_host);
+    		run(port, diff, lobby_host);
     	}
     	catch(Exception e){
     		e.printStackTrace();
@@ -105,7 +98,7 @@ public class BasicClient{
     	System.out.println("Game Over. See you next time!");
     }
 
-    public void buildClient(String address, int port, String lobby_host){
+    public void buildClient(String address, int port, String lobby_host, String diff){
     	System.out.println("Entering game as client");
     	System.out.println("Connecting to: " + address);
 
@@ -133,7 +126,7 @@ public class BasicClient{
 			}
 			catch (ConnectException ce) {
 				System.out.println("connection error returning to game lobby");
-				run(port, lobby_host);
+				run(port, diff, lobby_host);
 				
 			}
 			catch(Exception e){
